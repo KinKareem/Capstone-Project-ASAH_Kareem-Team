@@ -102,7 +102,4 @@ Capstone-Project-ASAH_Kareem-Team/
 - Gunakan praktik aksesibilitas: semantic HTML, ARIA, dan navigasi keyboard. (aku belum wkwkwkwkwkkwkw)
 - Backend memakai arsitektur berlapis: `routes → controllers → services`.
 
-## Pengembangan Bersamaan
-
-- Jalankan frontend dan backend di terminal terpisah untuk pengembangan paralel.
 
