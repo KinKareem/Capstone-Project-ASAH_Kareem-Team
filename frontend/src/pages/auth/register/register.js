@@ -91,7 +91,7 @@ if (registerForm) {
 const loginLink = document.getElementById("login-link");
 if (loginLink) {
   const roleQuery = roleParam ? `?role=${encodeURIComponent(roleParam)}` : "";
-  registerLink.setAttribute(
+  loginLink.setAttribute(
     "href",
     `/src/pages/auth/login/login.html${roleQuery}`
   );
