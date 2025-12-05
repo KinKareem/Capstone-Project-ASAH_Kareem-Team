@@ -251,6 +251,28 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 
+.card {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #e5e7eb;
+}
+.stats-row { display:flex; gap:10px; flex-wrap:wrap; }
+.stat-chip { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid #e5e7eb; border-radius:999px; background:#f9fafb; }
+.stat-chip .value { font-weight:700; color:#111827; }
+.stat-chip .label { color:#374151; font-size:12px; }
+
+/* Legend and table */
+.legend { display:flex; gap:12px; margin-top:10px; flex-wrap:wrap; }
+.legend-item { display:flex; align-items:center; gap:8px; color:#374151; font-size:12px; }
+.legend-swatch { width:10px; height:10px; border-radius:2px; display:inline-block; }
+
+.table { width:100%; border-collapse: collapse; }
+.table th, .table td { border:1px solid #e5e7eb; padding:8px 10px; text-align:left; }
+.table thead th { background:#f9fafb; color:#111827; font-weight:700; }
+.table tbody tr:nth-child(odd) { background:#fafafa; }
+
 .chatbot-messages {
   flex: 1;
   padding: 1.25rem;
