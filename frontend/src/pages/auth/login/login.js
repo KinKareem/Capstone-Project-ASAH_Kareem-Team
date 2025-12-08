@@ -1,6 +1,7 @@
 import "../../../style/style.css";
 import { postAuth } from "../../utils/api.js";
 import { putAccessToken } from "../../utils/auth.js";
+import { ROLE_ID_KEY } from "../../utils/config.js";
 
 const roleParam = new URLSearchParams(window.location.search).get("role");
 const roleMap = {
@@ -16,18 +17,19 @@ const updatePageTitle = () => {
       roleParam === "shipper_planner"
         ? "Shipper Planner"
         : roleParam === "mining_planner"
-          ? "Mining Planner"
-          : "Planner";
+        ? "Mining Planner"
+        : "Planner";
     const roleIcon =
       roleParam === "shipper_planner"
         ? "/assets/Port.png"
         : roleParam === "mining_planner"
-          ? "/assets/Oil Pump.png"
-          : "";
-    pageTitle.innerHTML = `${roleIcon
+        ? "/assets/Oil Pump.png"
+        : "";
+    pageTitle.innerHTML = `${
+      roleIcon
         ? `<img class="title-icon" src="${roleIcon}" alt="${roleTitle} icon" />`
         : ""
-      }<span>Login ${roleTitle}</span>`;
+    }<span>Login ${roleTitle}</span>`;
   }
 };
 
@@ -79,13 +81,17 @@ if (loginForm) {
         // Gunakan putAccessToken dari auth.js
         putAccessToken(token);
         localStorage.setItem("authUser", JSON.stringify(data?.user || {}));
+        try {
+          localStorage.setItem(ROLE_ID_KEY, String(roleId));
+        } catch {}
 
         setMessage(loginMsg, "Login berhasil! Mengalihkan...", "success");
 
         // Redirect berdasarkan role
         let redirectPath = "/index.html";
         if (roleId === 1) {
-          redirectPath = "/src/pages/shipping-planner/home/home_shipping_page.html";
+          redirectPath =
+            "/src/pages/shipping-planner/home/home_shipping_page.html";
         } else if (roleId === 2) {
           redirectPath = "/src/pages/mine-planner/home/home_planner_page.html";
         }

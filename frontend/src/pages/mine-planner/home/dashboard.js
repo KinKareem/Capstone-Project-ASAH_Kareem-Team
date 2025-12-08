@@ -13,7 +13,8 @@ async function fetchJson(path) {
 
 function renderBarChart(canvas, labels, values) {
   const ctx = canvas.getContext("2d");
-  const w = canvas.width, h = canvas.height;
+  const w = canvas.width,
+    h = canvas.height;
   ctx.clearRect(0, 0, w, h);
   const paddingLeft = 50;
   const paddingBottom = 30;
@@ -70,45 +71,133 @@ function renderPieChart(canvas, entries, legendEl) {
   });
   if (legendEl) {
     legendEl.innerHTML = entries
-      .map((e, i) => `<div class="legend-item"><span class="legend-swatch" style="background:${colors[i % colors.length]}"></span>${e.label}</div>`)
+      .map(
+        (e, i) =>
+          `<div class="legend-item"><span class="legend-swatch" style="background:${
+            colors[i % colors.length]
+          }"></span>${e.label}</div>`
+      )
       .join("");
   }
+}
+
+function renderLineChart(canvas, labels, values) {
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width,
+    h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  const paddingLeft = 50,
+    paddingBottom = 30,
+    paddingTop = 20;
+  const maxVal = Math.max(...values, 1);
+  const yTicks = 4;
+  const step = Math.ceil(maxVal / yTicks);
+  const chartHeight = h - paddingBottom - paddingTop;
+  const chartWidth = w - paddingLeft - 20;
+  ctx.strokeStyle = "#e5e7eb";
+  for (let t = 0; t <= yTicks; t++) {
+    const y = h - paddingBottom - (t / yTicks) * chartHeight;
+    ctx.beginPath();
+    ctx.moveTo(paddingLeft, y);
+    ctx.lineTo(w - 20, y);
+    ctx.stroke();
+    ctx.fillStyle = "#6b7280";
+    ctx.font = "12px system-ui";
+    ctx.fillText(String(t * step), 8, y + 4);
+  }
+  ctx.strokeStyle = "#4f46e5";
+  ctx.lineWidth = 2;
+  labels.forEach((_, i) => {
+    const x = paddingLeft + (i / Math.max(1, labels.length - 1)) * chartWidth;
+    const v = values[i] ?? 0;
+    const y =
+      h - paddingBottom - Math.round((v / (yTicks * step)) * chartHeight);
+    if (i === 0) ctx.beginPath(), ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.fillStyle = "#374151";
+  ctx.font = "12px system-ui";
+  labels.forEach((lab, i) => {
+    if (i % Math.ceil(labels.length / 6) === 0) {
+      const x = paddingLeft + (i / Math.max(1, labels.length - 1)) * chartWidth;
+      ctx.fillText(String(lab).slice(5), x - 12, h - paddingBottom + 16);
+    }
+  });
+}
+
+function renderStackedBar(canvas, labels, seriesMap) {
+  const statuses = Object.keys(seriesMap);
+  const colors = {
+    present: "#10b981",
+    sick: "#f59e0b",
+    permission: "#6366f1",
+    absent: "#ef4444",
+    leave: "#9ca3af",
+  };
+  const ctx = canvas.getContext("2d"),
+    w = canvas.width,
+    h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  const paddingLeft = 50,
+    paddingBottom = 30,
+    paddingTop = 20;
+  const chartHeight = h - paddingBottom - paddingTop,
+    chartWidth = w - paddingLeft - 20;
+  const barWidth = labels.length ? chartWidth / labels.length - 8 : 20;
+  const totals = labels.map((_, i) =>
+    statuses.reduce((sum, s) => sum + (seriesMap[s][i] || 0), 0)
+  );
+  const maxVal = Math.max(...totals, 1);
+  const yTicks = 4;
+  const step = Math.ceil(maxVal / yTicks);
+  ctx.strokeStyle = "#e5e7eb";
+  for (let t = 0; t <= yTicks; t++) {
+    const y = h - paddingBottom - (t / yTicks) * chartHeight;
+    ctx.beginPath();
+    ctx.moveTo(paddingLeft, y);
+    ctx.lineTo(w - 20, y);
+    ctx.stroke();
+    ctx.fillStyle = "#6b7280";
+    ctx.font = "12px system-ui";
+    ctx.fillText(String(t * step), 8, y + 4);
+  }
+  labels.forEach((lab, i) => {
+    let yBase = h - paddingBottom;
+    statuses.forEach((s) => {
+      const v = seriesMap[s][i] || 0;
+      const height = Math.round((v / (yTicks * step)) * chartHeight);
+      const x = paddingLeft + i * (barWidth + 8) + 4;
+      ctx.fillStyle = colors[s] || "#4f46e5";
+      ctx.fillRect(x, yBase - height, barWidth, height);
+      yBase -= height;
+    });
+    ctx.fillStyle = "#374151";
+    ctx.font = "12px system-ui";
+    if (i % Math.ceil(labels.length / 6) === 0)
+      ctx.fillText(
+        String(lab).slice(5),
+        paddingLeft + i * (barWidth + 8),
+        h - paddingBottom + 16
+      );
+  });
 }
 
 async function loadWeather() {
   const card = document.getElementById("weatherCard");
   try {
-    const lat = -6.2, lon = 106.8;
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto`;
-    const res = await fetch(url);
-    const wx = await res.json();
-    const codeMap = {
-      0: { t: "Cerah", e: "☀️" },
-      1: { t: "Sebagian berawan", e: "🌤️" },
-      2: { t: "Berawan", e: "☁️" },
-      3: { t: "Mendung", e: "☁️" },
-      45: { t: "Kabut", e: "🌫️" },
-      48: { t: "Kabut beku", e: "🌫️" },
-      51: { t: "Gerimis ringan", e: "🌦️" },
-      53: { t: "Gerimis", e: "🌦️" },
-      55: { t: "Gerimis deras", e: "🌧️" },
-      61: { t: "Hujan ringan", e: "🌧️" },
-      63: { t: "Hujan", e: "🌧️" },
-      65: { t: "Hujan deras", e: "⛈️" },
-      71: { t: "Salju ringan", e: "❄️" },
-      73: { t: "Salju", e: "❄️" },
-      75: { t: "Salju deras", e: "❄️" },
-      80: { t: "Hujan lokal", e: "🌧️" },
-      81: { t: "Hujan menyebar", e: "🌧️" },
-      82: { t: "Hujan badai", e: "⛈️" },
-      95: { t: "Badai guntur", e: "⛈️" },
-    };
-    const cur = wx.current || {};
-    const meta = codeMap[cur.weather_code];
-    const label = meta?.t || "Cuaca";
-    const emoji = meta?.e || "🌤️";
-    document.getElementById("weatherSummary").textContent = `${emoji} ${label} • ${cur.temperature_2m ?? "-"}°C`;
-    document.getElementById("weatherMeta").textContent = `Angin: ${cur.wind_speed_10m ?? "-"} m/s • Zona: ${wx.timezone}`;
+    const wx = await fetchJson("/dashboard/weather-today");
+    const d = wx.data || {};
+    const label = d.road_condition || "Cuaca";
+    const emoji = "🌤️";
+    document.getElementById(
+      "weatherSummary"
+    ).textContent = `${emoji} ${label} • Hujan: ${d.rainfall_mm ?? 0}mm`;
+    document.getElementById("weatherMeta").textContent = `Gelombang: ${
+      d.max_wave_m ?? 0
+    }m • Pelabuhan: ${d.port_status ?? "-"} • Jam efektif: ${
+      d.effective_working_hours ?? "-"
+    }`;
   } catch (e) {
     card.textContent = "Gagal memuat cuaca";
   }
@@ -116,60 +205,158 @@ async function loadWeather() {
 
 async function initDashboard() {
   try {
-    const blending = await fetchJson("/blending-plans");
-    const plans = Array.isArray(blending.data) ? blending.data : [];
-    const weeks = plans.map(p => p.plan_week);
-    const tonnages = plans.map(p => Number(p.target_tonnage_weekly || 0));
-    renderBarChart(document.getElementById("tonnageChart"), weeks.slice(-6), tonnages.slice(-6));
+    const kpi = await fetchJson("/dashboard/kpi");
+    const d = kpi.data || {};
+    document.getElementById("kpiTonnageToday").textContent = (
+      d.dailyTonnageToday ?? 0
+    ).toLocaleString("id-ID");
+    const eq = d.equipmentReady || { percent: 0, ready: 0, total: 0 };
+    document.getElementById(
+      "kpiEquipmentReadyBar"
+    ).style.width = `${eq.percent}%`;
+    document
+      .getElementById("kpiEquipmentReadyBar")
+      .setAttribute("aria-valuenow", String(eq.percent));
+    document.getElementById(
+      "kpiEquipmentReadyText"
+    ).textContent = `${eq.ready} / ${eq.total}`;
+    const att = d.employeeAttendance || { percent: 0, present: 0, total: 0 };
+    document.getElementById("kpiAttendanceBar").style.width = `${att.percent}%`;
+    document
+      .getElementById("kpiAttendanceBar")
+      .setAttribute("aria-valuenow", String(att.percent));
+    document.getElementById(
+      "kpiAttendanceText"
+    ).textContent = `${att.present} / ${att.total}`;
+    const wk = d.productionWeekly || { target: 0, actual: 0, percent: 0 };
+    document.getElementById(
+      "kpiWeeklyProgressBar"
+    ).style.width = `${wk.percent}%`;
+    document
+      .getElementById("kpiWeeklyProgressBar")
+      .setAttribute("aria-valuenow", String(wk.percent));
+    document.getElementById("kpiWeeklyProgressText").textContent = `${(
+      wk.actual || 0
+    ).toLocaleString("id-ID")} / ${(wk.target || 0).toLocaleString(
+      "id-ID"
+    )} Ton`;
   } catch {}
 
   try {
-    const eq = await fetchJson("/equipments");
-    const list = Array.isArray(eq.data) ? eq.data : [];
-    const available = list.filter(e => Number(e.is_available) === 1).length;
-    const unavailable = list.length - available;
-    renderPieChart(document.getElementById("availabilityChart"), [
-      { label: "Ready", value: available },
-      { label: "Down", value: unavailable },
-    ], document.getElementById("availabilityLegend"));
+    const trend = await fetchJson("/dashboard/daily-trend?days=30");
+    const rows = trend.data || [];
+    const labels = rows.map((r) => r.date);
+    const values = rows.map((r) => Number(r.tonnage || 0));
+    renderLineChart(document.getElementById("dailyTrendChart"), labels, values);
   } catch {}
 
   try {
-    const crews = await fetchJson("/crews");
-    const data = Array.isArray(crews.data) ? crews.data : [];
-    const hadir = data.filter(c => String(c.presence) === "Hadir").length;
-    const absen = data.filter(c => String(c.presence) === "Absen").length;
-    const sakit = data.filter(c => String(c.presence) === "Sakit").length;
-    const cuti = data.filter(c => String(c.presence) === "Cuti").length;
-    const el = document.getElementById("crewStats");
-    if (el) {
-      el.innerHTML = [
-        { label: "Hadir", value: hadir },
-        { label: "Absen", value: absen },
-        { label: "Sakit", value: sakit },
-        { label: "Cuti", value: cuti },
-      ].map(s => `<div class="stat-chip" role="listitem"><span class="value">${s.value}</span><span class="label">${s.label}</span></div>`).join("");
-    }
+    const br = await fetchJson("/dashboard/equipment-breakdown?days=7");
+    const rows = br.data || [];
+    const labels = rows.map((r) => r.unit_code);
+    const values = rows.map((r) => Number(r.total_tonnage || 0));
+    renderBarChart(
+      document.getElementById("equipmentBreakdownChart"),
+      labels,
+      values
+    );
+    const legend = document.getElementById("equipmentBreakdownLegend");
+    if (legend)
+      legend.innerHTML = labels
+        .map(
+          (l, i) =>
+            `<div class="legend-item"><span class="legend-swatch" style="background:#4f46e5"></span>${l}</div>`
+        )
+        .join("");
   } catch {}
 
   try {
-    const blending = await fetchJson("/blending-plans");
-    const plans = Array.isArray(blending.data) ? blending.data : [];
-    const last = plans.slice(-6).reverse();
-    const tbody = document.querySelector("#weeklyPlanTable tbody");
-    if (tbody) {
-      tbody.innerHTML = last.map(p => `
-        <tr>
-          <td>${p.plan_week}</td>
-          <td>${p.plan_year}</td>
-          <td>${p.target_tonnage_weekly}</td>
-          <td>${p.target_calori}</td>
-          <td>${p.target_ash_max}</td>
-          <td><span class="badge ${Number(p.is_approved_mine)===1?'ok':'pending'}">${Number(p.is_approved_mine)===1?'Approved':'Pending'}</span></td>
-          <td><span class="badge ${Number(p.is_approved_shipping)===1?'ok':'pending'}">${Number(p.is_approved_shipping)===1?'Approved':'Pending'}</span></td>
-        </tr>
-      `).join("");
-    }
+    const st = await fetchJson("/dashboard/equipment-status");
+    const rows = (st.data && st.data.rows) || [];
+    const entries = ["ready", "breakdown", "maintenance", "standby"].map(
+      (k) => ({
+        label: k,
+        value: Number(
+          (rows.find((r) => r.equipment_status === k) || {}).count || 0
+        ),
+      })
+    );
+    renderPieChart(
+      document.getElementById("equipmentStatusChart"),
+      entries,
+      document.getElementById("equipmentStatusLegend")
+    );
+  } catch {}
+
+  try {
+    const at = await fetchJson("/dashboard/attendance-trend?days=14");
+    const rows = at.data || [];
+    const labels = Array.from(new Set(rows.map((r) => r.date))).sort();
+    const statuses = ["present", "sick", "permission", "absent", "leave"];
+    const seriesMap = Object.fromEntries(
+      statuses.map((s) => [
+        s,
+        labels.map((d) => {
+          const m = rows.find((r) => r.date === d && r.attendance_status === s);
+          return Number(m?.count || 0);
+        }),
+      ])
+    );
+    renderStackedBar(
+      document.getElementById("attendanceStackedChart"),
+      labels,
+      seriesMap
+    );
+  } catch {}
+
+  try {
+    const det = await fetchJson("/dashboard/attendance-detail?days=14");
+    const rows = det.data || [];
+    const tbody = document.querySelector("#attendanceDetailTable tbody");
+    if (tbody)
+      tbody.innerHTML = rows
+        .map(
+          (r) =>
+            `<tr><td>${r.name || "-"}</td><td>${r.date || "-"}</td><td>${
+              r.attendance_status || "-"
+            }</td><td>${r.remarks || ""}</td></tr>`
+        )
+        .join("");
+  } catch {}
+
+  try {
+    let page = 1;
+    const pageSize = 10;
+    const renderSchedule = async () => {
+      const sch = await fetchJson(
+        `/dashboard/weekly-schedule?page=${page}&pageSize=${pageSize}`
+      );
+      const data = sch.data || {};
+      const rows = data.rows || [];
+      const tbody = document.querySelector("#weeklyScheduleTable tbody");
+      if (tbody)
+        tbody.innerHTML = rows
+          .map(
+            (r) =>
+              `<tr><td>${r.date || "-"}</td><td>${r.name || "-"}</td><td>${
+                r.unit_code || "-"
+              }</td><td>${r.shift_name || "-"}</td><td>${
+                r.location_name || "-"
+              }</td><td>${r.notes || ""}</td></tr>`
+          )
+          .join("");
+    };
+    document.getElementById("weeklyPrev").addEventListener("click", () => {
+      if (page > 1) {
+        page--;
+        renderSchedule();
+      }
+    });
+    document.getElementById("weeklyNext").addEventListener("click", () => {
+      page++;
+      renderSchedule();
+    });
+    renderSchedule();
   } catch {}
 
   loadWeather();
