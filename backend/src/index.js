@@ -7,6 +7,9 @@ import equipmentRoutes from "./routes/equipment_routes.js";
 import maintenanceScheduleRoutes from "./routes/maintenance_schedule_route.js";
 import pitRoutes from "./routes/pit_route.js";
 import plannerRoutes from "./routes/planner_route.js";
+import blendingPlanRoutes from "./routes/blending_plan_route.js";
+import dashboardRoutes from "./routes/dashboard_route.js";
+import shippingDashboardRoutes from "./routes/shipping_dashboard_route.js";
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -61,8 +64,15 @@ app.use("/maintenance-schedules", maintenanceScheduleRoutes);
 // API pit
 app.use("/pits", pitRoutes);
 
+
 // API palnner
 app.use("/planner", plannerRoutes);
+
+
+// API blending-plan
+app.use("/blending-plans", blendingPlanRoutes);
+app.use("/dashboard", dashboardRoutes);
+app.use("/shipping-dashboard", shippingDashboardRoutes);
 
 
 app.use((err, req, res, next) => {

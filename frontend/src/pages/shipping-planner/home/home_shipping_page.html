@@ -1,135 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shipping Operations Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="../../../../src/style/ship-planner/style.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+  </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mining Operations Dashboard</title>
-    <link rel="stylesheet" href="../../../../src/style/ship-planner/style.css">
-</head>
-
-<body>
-
-    <div class="dashboard-grid">
-
-        <aside class="sidebar">
-            <div class="profile-pic">
-                <img src="../../../../public/assets/mine-planner-image/mine-planner-profile.png" alt="profile">
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <aside
+          class="sidebar col-2 col-xl-2 bg-body-tertiary border-end min-vh-100 d-flex flex-column align-items-center py-4"
+        >
+          <div class="card w-100 text-center border-0 bg-transparent mb-3">
+            <div class="card-body">
+              <img
+                src="../../../../public/assets/mine-planner-image/mine-planner-profile.png"
+                alt="profile"
+                class="img-fluid rounded-circle border border-3 mb-3"
+                style="width: 96px; height: 96px; object-fit: cover"
+              />
+              <h3 class="fs-5 fw-bold mb-0">Nino</h3>
+              <p class="text-muted mb-0">Shipping Planner</p>
             </div>
+          </div>
 
-            <h3 class="profile-name">Nino</h3>
-            <p class="profile-role">Dashboard Shipping Planner</p>
+          <nav class="w-100 mb-3">
+            <ul class="nav nav-pills flex-column w-100">
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  aria-current="page"
+                  href="./home_shipping_page.html"
+                  ><i class="bi bi-clipboard-data"></i> Dashboard</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  href="../shipping_schedule/shipping_schedule.html"
+                  ><i class="bi bi-clipboard-check"></i> Planning</a
+                >
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bi bi-database"></i> Database
+                </a>
+                <ul class="dropdown-menu w-100">
+                  <li>
+                    <a class="dropdown-item" href="../ai_agent/ai_agent.html"
+                      ><i class="bi bi-cpu"></i> AI Optimization</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="../shipping_schedule/shipping_schedule.html"
+                      ><i class="bi bi-calendar-check"></i> Shipping Schedule</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="../shipping_vessel/shipping_vessel.html"
+                      ><i class="bi bi-truck"></i> Shipping Vessel</a
+                    >
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" id="openChatShip"
+                  ><i class="bi bi-chat-dots"></i> Free Chat</a
+                >
+              </li>
+            </ul>
+          </nav>
 
-            <button class="btn-sidebar btn-primary">
-                Akses Mine Hub
+          <div class="logout-container w-100 mt-auto px-2">
+            <button class="btn btn-danger w-100" id="logout-btn">
+              Keluar (Logout)
             </button>
-            <button class="btn-sidebar btn-secondary">
-                Pengaturan Akun
-            </button>
-
-            <div class="logout-container">
-                <button class="btn-logout" id="logout-btn">
-                    Keluar (Logout)
-                </button>
-            </div>
+          </div>
         </aside>
 
-        <main class="main-content">
-            <h1 style="font-size: 30px; font-weight: 700; margin-bottom: 32px; color: #1f2937;">Dashboard Shipping
-                Planner
-            </h1>
+        <main class="main-content col">
+          <h1
+            class="mb-4"
+            style="font-size: 30px; font-weight: 700; color: #1f2937"
+          >
+            Dashboard Shipping Planner
+          </h1>
 
-            <section id="dashboard-widgets" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px;">
-                <div class="card" aria-label="Target Tonase Mingguan">
-                    <h2 style="font-size:16px;font-weight:700;margin:0 0 8px;">Target Tonase Mingguan</h2>
-                    <canvas id="shipTonnageChart" width="400" height="220" role="img" aria-label="Bar chart target tonase mingguan"></canvas>
-                </div>
-                <div class="card" aria-label="Approval Shipping">
-                    <h2 style="font-size:16px;font-weight:700;margin:0 0 8px;">Approval Shipping</h2>
-                    <canvas id="shipmentApprovalChart" width="400" height="220" role="img" aria-label="Pie chart approval shipping"></canvas>
-                    <div id="shipmentLegend" class="legend" aria-label="Keterangan pie chart"></div>
-                </div>
-                <div class="card" aria-live="polite" aria-label="Cuaca Terkini">
-                    <h2 style="font-size:16px;font-weight:700;margin:0 0 8px;">Cuaca Terkini</h2>
-                    <div id="shipWeatherCard" style="display:flex;flex-direction:column;gap:6px;">
-                        <div id="shipWeatherSummary">Memuat cuaca...</div>
-                        <div id="shipWeatherMeta" style="font-size:12px;color:#555"></div>
-                    </div>
-                </div>
-                <div class="card" aria-label="Weekly Plan">
-                    <h2 style="font-size:16px;font-weight:700;margin:0 0 8px;">Weekly Plan</h2>
-                    <table id="shipWeeklyTable" class="table" aria-label="Tabel weekly plan shipping">
-                        <thead>
-                            <tr>
-                                <th>Week</th>
-                                <th>Year</th>
-                                <th>Target Tonnage</th>
-                                <th>Calori</th>
-                                <th>Ash Max</th>
-                                <th>Shipping</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <div class="menu-grid">
-                <a href="../ai_agent/ai_agent.html" class="menu-card">
-                    <img src="../../../../public/assets/ship-planner-image/sp2.jpg" alt="AI Icon" class="menu-icon">
-                    <p class="menu-label">AI Optimization</p>
-                </a>
-
-                <a href="../shipping_schedule/shipping_schedule.html" class="menu-card">
-                    <img src="../../../../public/assets/ship-planner-image/sp2.jpg" alt="AI Icon" class="menu-icon">
-                    <p class="menu-label">Shipping Schedule</p>
-                </a>
-
-                <a href="../shipping_vessel/shipping_vessel.html" class="menu-card">
-                    <img src="../../../../public/assets/ship-planner-image/sp2.jpg" alt="AI Icon" class="menu-icon">
-                    <p class="menu-label">Shipping Vessel</p>
-                </a>
+          <section id="shipping-kpi" class="row g-3 mb-3">
+            <div class="card col" aria-label="ETA Upcoming">
+              <div class="fw-bold">Jumlah Kapal Akan Datang</div>
+              <div id="kpiUpcomingVessel" class="fs-4">0</div>
             </div>
-        </main>
+            <div class="card col" aria-label="Weekly Target Load">
+              <div class="fw-bold">Target Load Minggu Ini</div>
+              <div id="kpiWeeklyTarget" class="fs-4">0</div>
+            </div>
+            <div class="card col" aria-label="Port Status">
+              <div class="fw-bold">Port Status Hari Ini</div>
+              <div id="kpiPortStatus" class="fs-5">-</div>
+            </div>
+            <div class="card col" aria-label="Wave Height">
+              <div class="fw-bold">Wave Height Hari Ini</div>
+              <div id="kpiWaveHeight" class="fs-4">0 m</div>
+            </div>
+          </section>
 
-        <!-- Floating Chat Button -->
-        <div class="floating-chat" id="chatToggle">
-            💬 Chatbot AI
-        </div>
+          <section id="shipping-widgets" class="row g-3 mb-3">
+            <div class="card col-12" aria-label="Shipping Schedule Gantt">
+              <h2 style="font-size: 16px; font-weight: 700; margin: 0 0 8px">
+                ETA/ETB Kapal (Timeline)
+              </h2>
+              <div
+                id="ganttContainer"
+                style="
+                  position: relative;
+                  min-height: 260px;
+                  border: 1px solid #e5e7eb;
+                  border-radius: 8px;
+                  padding: 12px;
+                  overflow: auto;
+                "
+              ></div>
+            </div>
+            <div class="card col-12" aria-label="Target vs Actual Loading">
+              <h2 style="font-size: 16px; font-weight: 700; margin: 0 0 8px">
+                Target vs Realisasi Loading
+              </h2>
+              <canvas
+                id="targetActualChart"
+                width="800"
+                height="240"
+                role="img"
+                aria-label="Bar chart target vs actual"
+              ></canvas>
+            </div>
+            <div
+              class="card col-12"
+              aria-live="polite"
+              aria-label="Cuaca & Port"
+            >
+              <h2 style="font-size: 16px; font-weight: 700; margin: 0 0 8px">
+                Cuaca & Port Condition
+              </h2>
+              <div class="row g-3" id="shippingWeatherCards">
+                <div class="col">
+                  <div class="card">
+                    <div class="fw-bold">Rainfall (mm)</div>
+                    <div id="wxRainfall" class="fs-5">0</div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="card">
+                    <div class="fw-bold">Wave Height (m)</div>
+                    <div id="wxWave" class="fs-5">0</div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="card">
+                    <div class="fw-bold">Port Status</div>
+                    <div id="wxPort" class="fs-6">-</div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="card">
+                    <div class="fw-bold">Eff. Working Hours</div>
+                    <div id="wxHours" class="fs-5">0</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card col-12" aria-label="Blending Plan">
+              <h2 style="font-size: 16px; font-weight: 700; margin: 0 0 8px">
+                Status Approval Blending Plan
+              </h2>
+              <div class="d-flex gap-2 mb-2">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="filterWeek"
+                  placeholder="Week"
+                  style="max-width: 140px"
+                />
+                <input
+                  type="number"
+                  class="form-control"
+                  id="filterYear"
+                  placeholder="Year"
+                  style="max-width: 140px"
+                />
+                <button class="btn btn-outline-secondary" id="applyFilter">
+                  Filter
+                </button>
+              </div>
+              <table
+                id="shippingBlendingTable"
+                class="table"
+                aria-label="Tabel blending plan"
+              >
+                <thead>
+                  <tr>
+                    <th>Week</th>
+                    <th>Year</th>
+                    <th>Target Tonnage</th>
+                    <th>Calori</th>
+                    <th>Initial Ash</th>
+                    <th>Final Ash</th>
+                    <th>Mine</th>
+                    <th>Shipping</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="card col-12" aria-label="Optimization Log">
+              <h2 style="font-size: 16px; font-weight: 700; margin: 0 0 8px">
+                Log Optimasi Rencana Kapal
+              </h2>
+              <div class="accordion" id="optimizationAccordion"></div>
+            </div>
+          </section>
+        </main>
 
         <!-- Chatbot Popup -->
         <div class="chatbot-popup" id="chatbotPopup">
-            <div class="chatbot-header">
-                <h3>
-                    <span class="status-dot" id="statusDot"></span>
-                    AI Assistant
-                </h3>
-                <button class="close-btn" id="closeChat">×</button>
-            </div>
+          <div class="chatbot-header">
+            <h3>
+              <span class="status-dot" id="statusDot"></span>
+              AI Assistant
+            </h3>
+            <button class="close-btn" id="closeChat">×</button>
+          </div>
 
-            <div class="config-notice" id="configNotice">
-                ⚠️ Mohon konfigurasi N8N Webhook URL terlebih dahulu
-            </div>
+          <div class="config-notice" id="configNotice">
+            ⚠️ Mohon konfigurasi N8N Webhook URL terlebih dahulu
+          </div>
 
-            <div class="chatbot-messages" id="chatMessages">
-                <div class="message bot">
-                    <div class="message-avatar">AI</div>
-                    <div class="message-content">
-                        Halo! Saya AI Assistant untuk Shipping Planner. Ada yang bisa saya bantu hari ini?
-                    </div>
-                </div>
+          <div class="chatbot-messages" id="chatMessages">
+            <div class="message bot">
+              <div class="message-avatar">AI</div>
+              <div class="message-content">
+                Halo! Saya AI Assistant untuk Shipping Planner. Ada yang bisa
+                saya bantu hari ini?
+              </div>
             </div>
+          </div>
 
-            <div class="chatbot-input">
-                <input type="text" id="messageInput" placeholder="Ketik pesan Anda...">
-                <button class="send-btn" id="sendBtn">Kirim</button>
-            </div>
+          <div class="chatbot-input">
+            <input
+              type="text"
+              id="messageInput"
+              placeholder="Ketik pesan Anda..."
+            />
+            <button class="send-btn" id="sendBtn">Kirim</button>
+          </div>
         </div>
-
+      </div>
     </div>
 
+    <button
+      class="btn btn-primary rounded-circle shadow position-fixed bottom-0 end-0 m-3 floating-chat"
+      id="chatToggle"
+      aria-label="Buka Chatbot"
+    >
+      <i class="bi bi-chat-dots"></i>
+    </button>
+
+    <script type="module">
+      import {
+        checkAuthenticatedRoute,
+        ensureRoleAccess,
+      } from "../../utils/auth.js";
+      checkAuthenticatedRoute("shipping-dashboard");
+      ensureRoleAccess("shipping-planner");
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="minichatbox.js"></script>
     <script type="module" src="./dashboard.js"></script>
-</body>
-
+    <script type="module" src="../../utils/logout.js"></script>
+    <script>
+      document
+        .getElementById("openChatShip")
+        ?.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.getElementById("chatToggle")?.click();
+        });
+    </script>
+  </body>
 </html>

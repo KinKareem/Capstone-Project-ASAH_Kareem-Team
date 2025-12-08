@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-CREATE DATABASE  IF NOT EXISTS `db_mining_app` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `db_mining_app`;
 -- MySQL dump 10.13  Distrib 8.0.44, for Win64 (x86_64)
 --
 -- Host: shuttle.proxy.rlwy.net    Database: db_mining_app
 -- ------------------------------------------------------
 -- Server version	9.4.0
-=======
--- MySQL dump combined for db_mining_app (COMPLETE VERSION)
--- Server version 9.4.0
->>>>>>> 9f98f19af362063e3803dee35572af4760ae119f
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -22,27 +15,6 @@ USE `db_mining_app`;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-<<<<<<< HEAD
---
--- Table structure for table `daily_attendance`
---
-
-DROP TABLE IF EXISTS `daily_attendance`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `daily_attendance` (
-  `attendance_id` int NOT NULL AUTO_INCREMENT,
-  `date` date DEFAULT NULL,
-  `employee_id` int DEFAULT NULL,
-  `attendance_status` enum('present','sick','permission','absent','leave') DEFAULT 'present',
-  `remarks` text,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`attendance_id`),
-  KEY `employee_id` (`employee_id`),
-  CONSTRAINT `daily_attendance_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
 --
 -- Dumping data for table `daily_attendance`
 --
@@ -53,26 +25,6 @@ LOCK TABLES `daily_attendance` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `daily_equipment_status`
---
-
-DROP TABLE IF EXISTS `daily_equipment_status`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `daily_equipment_status` (
-  `status_id` int NOT NULL AUTO_INCREMENT,
-  `date` date DEFAULT NULL,
-  `equipment_id` int DEFAULT NULL,
-  `equipment_status` enum('ready','breakdown','maintenance','standby') DEFAULT 'ready',
-  `remarks` text,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`status_id`),
-  KEY `equipment_id` (`equipment_id`),
-  CONSTRAINT `daily_equipment_status_ibfk_1` FOREIGN KEY (`equipment_id`) REFERENCES `heavy_equipment` (`equipment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `daily_equipment_status`
 --
 
@@ -80,31 +32,6 @@ LOCK TABLES `daily_equipment_status` WRITE;
 /*!40000 ALTER TABLE `daily_equipment_status` DISABLE KEYS */;
 /*!40000 ALTER TABLE `daily_equipment_status` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `daily_report_details`
---
-
-DROP TABLE IF EXISTS `daily_report_details`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `daily_report_details` (
-  `detail_id` int NOT NULL AUTO_INCREMENT,
-  `report_id` int DEFAULT NULL,
-  `equipment_id` int DEFAULT NULL,
-  `employee_id` int DEFAULT NULL,
-  `tonnage` float DEFAULT NULL,
-  `start_time` time DEFAULT NULL,
-  `end_time` time DEFAULT NULL,
-  PRIMARY KEY (`detail_id`),
-  KEY `report_id` (`report_id`),
-  KEY `equipment_id` (`equipment_id`),
-  KEY `employee_id` (`employee_id`),
-  CONSTRAINT `daily_report_details_ibfk_1` FOREIGN KEY (`report_id`) REFERENCES `daily_reports` (`report_id`),
-  CONSTRAINT `daily_report_details_ibfk_2` FOREIGN KEY (`equipment_id`) REFERENCES `heavy_equipment` (`equipment_id`),
-  CONSTRAINT `daily_report_details_ibfk_3` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `daily_report_details`
@@ -117,28 +44,6 @@ INSERT INTO `daily_report_details` VALUES (1,1,7,1,3200,'06:00:00','14:00:00'),(
 UNLOCK TABLES;
 
 --
--- Table structure for table `daily_reports`
---
-
-DROP TABLE IF EXISTS `daily_reports`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `daily_reports` (
-  `report_id` int NOT NULL AUTO_INCREMENT,
-  `period_id` int DEFAULT NULL,
-  `date` date DEFAULT NULL,
-  `daily_tonnage` float DEFAULT NULL,
-  `total_employees_present` int DEFAULT NULL,
-  `total_equipment_ready` int DEFAULT NULL,
-  `notes` text,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`report_id`),
-  KEY `period_id` (`period_id`),
-  CONSTRAINT `daily_reports_ibfk_1` FOREIGN KEY (`period_id`) REFERENCES `weekly_periods` (`period_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `daily_reports`
 --
 
@@ -147,25 +52,6 @@ LOCK TABLES `daily_reports` WRITE;
 INSERT INTO `daily_reports` VALUES (1,1,'2025-12-01',18500,10,9,'Production stable','2025-12-06 18:34:34'),(2,1,'2025-12-02',19200,10,9,'Good weather','2025-12-06 18:34:34'),(3,1,'2025-12-03',17800,10,10,'Slight delay due to hauling congestion','2025-12-06 18:34:34');
 /*!40000 ALTER TABLE `daily_reports` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `employees`
---
-
-DROP TABLE IF EXISTS `employees`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `employees` (
-  `employee_id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) DEFAULT NULL,
-  `position` varchar(50) DEFAULT NULL,
-  `status` enum('active','inactive') DEFAULT 'active',
-  `competency` varchar(100) DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `employees`
@@ -178,27 +64,6 @@ INSERT INTO `employees` VALUES (1,'Budi Santoso','Haul Truck Operator','active',
 UNLOCK TABLES;
 
 --
--- Table structure for table `fleet_master`
---
-
-DROP TABLE IF EXISTS `fleet_master`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `fleet_master` (
-  `asset_id` char(20) NOT NULL,
-  `equipment_type` char(50) DEFAULT NULL,
-  `model` char(50) DEFAULT NULL,
-  `capacity` smallint DEFAULT NULL,
-  `capacity_unit` char(20) DEFAULT NULL,
-  `current_status` char(50) DEFAULT NULL,
-  `location` char(50) DEFAULT NULL,
-  `planner_notes` text,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`asset_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `fleet_master`
 --
 
@@ -207,25 +72,6 @@ LOCK TABLES `fleet_master` WRITE;
 INSERT INTO `fleet_master` VALUES ('CRUSHER-A','Crusher','GyratoryX',1000,'ton/hour','Operational','Stockpile',NULL,'2025-12-02 00:35:49'),('CRUSHER-B','Crusher','GyratoryX',1000,'ton/hour','Operational','Stockpile',NULL,'2025-12-02 00:35:49'),('SHIPLOADER-01','Shiploader','Standard',1000,'ton/hour','Operational','Port',NULL,'2025-12-02 00:35:49'),('SHIPLOADER-02','Shiploader','Standard',1000,'ton/hour','Operational','Port',NULL,'2025-12-02 00:35:49'),('SHOVEL-01','Shovel','RopeShovel 45m3',85,'ton/bucket','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('SHOVEL-02','Shovel','RopeShovel 45m3',85,'ton/bucket','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-001','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-002','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-003','Haul Truck','CAT 793F',240,'ton/trip','Breakdown','PIT-A','oleng','2025-12-03 15:18:59'),('TRUK-004','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-005','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-006','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-007','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-008','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-009','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-010','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-011','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-012','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-013','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-014','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-015','Haul Truck','CAT 793F',240,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-016','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-017','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-018','Haul Truck','Komatsu 930E',290,'ton/trip','Maintenance','Workshop','Brake repair, est finish 25-Nov','2025-12-02 00:35:49'),('TRUK-019','Haul Truck','Komatsu 930E',290,'ton/trip','Breakdown','PIT-B','Waiting for parts, est 18-Nov','2025-12-02 00:35:49'),('TRUK-020','Haul Truck','Komatsu 930E',290,'ton/trip','Maintenance','Workshop','Scheduled Service, finish 27-Nov EOD','2025-12-02 00:35:49'),('TRUK-021','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-022','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-023','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-024','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-025','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-026','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-027','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-028','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49'),('TRUK-029','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-B',NULL,'2025-12-02 00:35:49'),('TRUK-030','Haul Truck','Komatsu 930E',290,'ton/trip','Operational','PIT-A',NULL,'2025-12-02 00:35:49');
 /*!40000 ALTER TABLE `fleet_master` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `heavy_equipment`
---
-
-DROP TABLE IF EXISTS `heavy_equipment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `heavy_equipment` (
-  `equipment_id` int NOT NULL AUTO_INCREMENT,
-  `unit_code` varchar(50) DEFAULT NULL,
-  `equipment_type` enum('Crusher','Shiploader','Shovel','Haul Truck') DEFAULT NULL,
-  `capacity` float DEFAULT NULL,
-  `default_status` enum('ready','standby','maintenance') DEFAULT 'ready',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`equipment_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `heavy_equipment`
@@ -238,21 +84,6 @@ INSERT INTO `heavy_equipment` VALUES (1,'CRUSHER-A','Crusher',1000,'ready','2025
 UNLOCK TABLES;
 
 --
--- Table structure for table `locations`
---
-
-DROP TABLE IF EXISTS `locations`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `locations` (
-  `location_id` int NOT NULL AUTO_INCREMENT,
-  `location_name` varchar(100) DEFAULT NULL,
-  `location_type` enum('pit','disposal','hauling','workshop','stockpile') DEFAULT NULL,
-  PRIMARY KEY (`location_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `locations`
 --
 
@@ -261,28 +92,6 @@ LOCK TABLES `locations` WRITE;
 INSERT INTO `locations` VALUES (1,'PIT-A','pit'),(2,'PIT-B','pit'),(3,'PIT-C','pit'),(4,'WORKSHOP','workshop'),(5,'DISPOSAL-1','disposal'),(6,'DISPOSAL-2','disposal'),(7,'HAULING-ROAD-1','hauling'),(8,'STOCKPILE','stockpile');
 /*!40000 ALTER TABLE `locations` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `plan_optimization_log`
---
-
-DROP TABLE IF EXISTS `plan_optimization_log`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `plan_optimization_log` (
-  `log_id` int NOT NULL AUTO_INCREMENT,
-  `plan_id` varchar(50) NOT NULL,
-  `version` int DEFAULT '1',
-  `summary_json` json DEFAULT NULL,
-  `scenarios_json` json DEFAULT NULL,
-  `selected_scenario_id` json DEFAULT NULL,
-  `rejection_note` text,
-  `current_step` enum('DRAFTING_MINE','DRAFTING_SHIP','SCENARIO_SELECTION','FINAL_APPROVAL','COMPLETED','REJECTED') DEFAULT 'DRAFTING_MINE',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`log_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `plan_optimization_log`
@@ -295,22 +104,6 @@ INSERT INTO `plan_optimization_log` VALUES (7,'W50-2025',1,'{\"alerts\": {\"flee
 UNLOCK TABLES;
 
 --
--- Table structure for table `shifts`
---
-
-DROP TABLE IF EXISTS `shifts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `shifts` (
-  `shift_id` int NOT NULL AUTO_INCREMENT,
-  `shift_name` varchar(50) DEFAULT NULL,
-  `start_time` time DEFAULT NULL,
-  `end_time` time DEFAULT NULL,
-  PRIMARY KEY (`shift_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `shifts`
 --
 
@@ -319,25 +112,6 @@ LOCK TABLES `shifts` WRITE;
 INSERT INTO `shifts` VALUES (1,'Morning Shift','06:00:00','14:00:00'),(2,'Evening Shift','14:00:00','22:00:00'),(3,'Night Shift','22:00:00','06:00:00');
 /*!40000 ALTER TABLE `shifts` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `shipping_schedule`
---
-
-DROP TABLE IF EXISTS `shipping_schedule`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `shipping_schedule` (
-  `vessel_id` char(20) NOT NULL,
-  `vessel_name` varchar(100) DEFAULT NULL,
-  `eta_date` date DEFAULT NULL,
-  `latest_berthing` date DEFAULT NULL,
-  `target_load_tons` int DEFAULT NULL,
-  `shipping_notes` text,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`vessel_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `shipping_schedule`
@@ -350,28 +124,6 @@ INSERT INTO `shipping_schedule` VALUES ('KPL-DEC01','MV Bara Sejahtera','2025-12
 UNLOCK TABLES;
 
 --
--- Table structure for table `tb_blending_plan`
---
-
-DROP TABLE IF EXISTS `tb_blending_plan`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tb_blending_plan` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `plan_week` int NOT NULL,
-  `plan_year` int NOT NULL,
-  `target_tonnage_weekly` int NOT NULL,
-  `target_calori` decimal(6,2) DEFAULT '4800.00',
-  `target_ash_max` decimal(4,2) DEFAULT '12.00',
-  `initial_ash_draft` decimal(4,2) DEFAULT '12.50',
-  `final_ash_result` decimal(4,2) DEFAULT NULL,
-  `is_approved_mine` tinyint(1) DEFAULT '0',
-  `is_approved_shipping` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `tb_blending_plan`
 --
 
@@ -380,27 +132,6 @@ LOCK TABLES `tb_blending_plan` WRITE;
 INSERT INTO `tb_blending_plan` VALUES (1,47,2025,112000,4800.00,12.00,12.50,NULL,0,0);
 /*!40000 ALTER TABLE `tb_blending_plan` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `tb_equipment`
---
-
-DROP TABLE IF EXISTS `tb_equipment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tb_equipment` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `unit_id` varchar(20) NOT NULL,
-  `type` varchar(50) NOT NULL,
-  `location` varchar(100) DEFAULT 'Workshop',
-  `status` enum('Available','Breakdown','Maintenance','Standby') DEFAULT 'Available',
-  `is_available` tinyint(1) DEFAULT '1',
-  `productivity_rate` decimal(6,2) DEFAULT '0.00',
-  `last_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unit_id` (`unit_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `tb_equipment`
@@ -413,27 +144,6 @@ INSERT INTO `tb_equipment` VALUES (1,'DT-01','Dump Truck','Pit A','Available',1,
 UNLOCK TABLES;
 
 --
--- Table structure for table `tb_karyawan`
---
-
-DROP TABLE IF EXISTS `tb_karyawan`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tb_karyawan` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nama` varchar(100) NOT NULL,
-  `user_id` int DEFAULT NULL,
-  `competency` varchar(150) NOT NULL,
-  `current_unit_id` int DEFAULT NULL,
-  `current_shift` varchar(20) DEFAULT 'Day 1',
-  `presence` enum('Hadir','Absen','Sakit','Cuti') DEFAULT 'Hadir',
-  PRIMARY KEY (`id`),
-  KEY `unit_fk` (`current_unit_id`),
-  CONSTRAINT `tb_karyawan_ibfk_1` FOREIGN KEY (`current_unit_id`) REFERENCES `tb_equipment` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `tb_karyawan`
 --
 
@@ -442,22 +152,6 @@ LOCK TABLES `tb_karyawan` WRITE;
 INSERT INTO `tb_karyawan` VALUES (2,'Budi Cahyo',NULL,'Heavy Excavator Certified',2,'Day 1','Hadir'),(3,'Cintya Putri',NULL,'Dump Truck',4,'Day 1','Hadir'),(4,'Doni Rian',NULL,'Dozer, Scraper',5,'Night 1','Hadir'),(5,'Eva Melisa',NULL,'Dump Truck',NULL,'Day 1','Absen');
 /*!40000 ALTER TABLE `tb_karyawan` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `tb_roles`
---
-
-DROP TABLE IF EXISTS `tb_roles`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tb_roles` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
-  `description` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `tb_roles`
@@ -470,28 +164,6 @@ INSERT INTO `tb_roles` VALUES (1,'shipper_planner','Perencana pengiriman kapal')
 UNLOCK TABLES;
 
 --
--- Table structure for table `tb_users`
---
-
-DROP TABLE IF EXISTS `tb_users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tb_users` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(100) NOT NULL,
-  `email` varchar(150) NOT NULL,
-  `pass` varchar(255) NOT NULL,
-  `role_id` int NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`),
-  UNIQUE KEY `email` (`email`),
-  KEY `role_fk` (`role_id`),
-  CONSTRAINT `fk_role` FOREIGN KEY (`role_id`) REFERENCES `tb_roles` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `tb_users`
 --
 
@@ -500,26 +172,6 @@ LOCK TABLES `tb_users` WRITE;
 INSERT INTO `tb_users` VALUES (1,'budi_shipper','budi@example.com','$2y$10$abcdefg1234567890example',1,'2025-11-04 07:55:39'),(2,'andi_mining','andi@example.com','$2y$10$hijklmn0987654321example',2,'2025-11-04 07:55:39'),(3,'kin','waw@gmail.com','$2y$10$hUgDxYUGnmO7GLcHsErshecRi439S4R6TiG86KemwC2tYhdoTtTAO',1,'2025-11-04 08:49:45'),(4,'kalvin','kalvin@gmail.com','$2b$10$ULHfS0nCmjxhoq2XQ7lBi.KlAvVTDalTbD46985xU5mY0/UwCFgl6',2,'2025-12-01 09:28:54'),(5,'Ichika','ichika@gmail.com','$2b$10$qaAh6gulWY/GGhl5zAHOneDlqZm.zgeWhfdFT3NzclmlXDXxNAQC.',1,'2025-12-01 09:45:10'),(6,'Kalvin Ship','kalvinship@gmail.com','$2b$10$ZNdifKunSATirnZKoiNNpefNFX2xetP8VVW0isPLLzeqSICtddWyy',1,'2025-12-01 09:47:03'),(7,'testmine','testmine@gmail.com','$2b$10$MoBt7R5vSNMToj.p2/bdj.vx3aGv2/x7sD.y8jotWwIWoB.D16dRu',2,'2025-12-06 03:28:49');
 /*!40000 ALTER TABLE `tb_users` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `weather`
---
-
-DROP TABLE IF EXISTS `weather`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `weather` (
-  `date` date NOT NULL,
-  `rainfall_mm` float DEFAULT '0',
-  `road_condition` enum('Flooded','Very Slippery','Slippery','Wet','Dry') DEFAULT NULL,
-  `max_wave_m` float DEFAULT '0',
-  `port_status` enum('Closed','Restricted','Open') DEFAULT NULL,
-  `effective_working_hours` int DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`date`),
-  UNIQUE KEY `date` (`date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `weather`
@@ -532,24 +184,6 @@ INSERT INTO `weather` VALUES ('2025-12-07',1.3,'Wet',0.5,'Open',22,'2025-12-07 0
 UNLOCK TABLES;
 
 --
--- Table structure for table `weekly_periods`
---
-
-DROP TABLE IF EXISTS `weekly_periods`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `weekly_periods` (
-  `period_id` int NOT NULL AUTO_INCREMENT,
-  `period_code` varchar(50) DEFAULT NULL,
-  `start_date` date DEFAULT NULL,
-  `end_date` date DEFAULT NULL,
-  `target_tonnage` float DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`period_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `weekly_periods`
 --
 
@@ -558,25 +192,6 @@ LOCK TABLES `weekly_periods` WRITE;
 INSERT INTO `weekly_periods` VALUES (1,'WEEK-2025-49','2025-12-01','2025-12-07',150000,'2025-12-06 18:25:40'),(2,'WEEK-2025-50','2025-12-08','2025-12-14',155000,'2025-12-06 18:25:40'),(3,'WEEK-2025-51','2025-12-15','2025-12-21',160000,'2025-12-06 18:25:40'),(5,'WEEK-2025-50','2025-11-30','2025-12-06',131000,'2025-12-06 19:26:45'),(6,'WEEK-2025-W52','2025-12-21','2025-12-27',0,'2025-12-07 06:28:02'),(7,'WEEK-2025-W52','2025-12-27','2026-01-02',0,'2025-12-07 06:32:33'),(8,'WEEK-2026-W01','2026-01-02','2026-01-08',0,'2025-12-07 06:32:46');
 /*!40000 ALTER TABLE `weekly_periods` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `weekly_plan`
---
-
-DROP TABLE IF EXISTS `weekly_plan`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `weekly_plan` (
-  `plan_id` char(10) NOT NULL,
-  `start_date` date DEFAULT NULL,
-  `end_date` date DEFAULT NULL,
-  `production_target_tons` int DEFAULT NULL,
-  `stockpile_tons` int DEFAULT NULL,
-  `plan_status` varchar(50) DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`plan_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `weekly_plan`
@@ -589,37 +204,6 @@ INSERT INTO `weekly_plan` VALUES ('W50-2025','2025-12-08','2025-12-14',257058,0,
 UNLOCK TABLES;
 
 --
--- Table structure for table `weekly_schedule`
---
-
-DROP TABLE IF EXISTS `weekly_schedule`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `weekly_schedule` (
-  `schedule_id` int NOT NULL AUTO_INCREMENT,
-  `period_id` int DEFAULT NULL,
-  `date` date DEFAULT NULL,
-  `employee_id` int DEFAULT NULL,
-  `equipment_id` int DEFAULT NULL,
-  `shift_id` int DEFAULT NULL,
-  `location_id` int DEFAULT NULL,
-  `notes` text,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`schedule_id`),
-  KEY `period_id` (`period_id`),
-  KEY `employee_id` (`employee_id`),
-  KEY `equipment_id` (`equipment_id`),
-  KEY `shift_id` (`shift_id`),
-  KEY `location_id` (`location_id`),
-  CONSTRAINT `weekly_schedule_ibfk_1` FOREIGN KEY (`period_id`) REFERENCES `weekly_periods` (`period_id`),
-  CONSTRAINT `weekly_schedule_ibfk_2` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`),
-  CONSTRAINT `weekly_schedule_ibfk_3` FOREIGN KEY (`equipment_id`) REFERENCES `heavy_equipment` (`equipment_id`),
-  CONSTRAINT `weekly_schedule_ibfk_4` FOREIGN KEY (`shift_id`) REFERENCES `shifts` (`shift_id`),
-  CONSTRAINT `weekly_schedule_ibfk_5` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=211 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Dumping data for table `weekly_schedule`
 --
 
@@ -630,305 +214,6 @@ INSERT INTO `weekly_schedule` VALUES (141,1,'2025-12-01',1,7,1,1,'Scheduled work
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-=======
--- =======================================================
--- BAGIAN 1: TABEL MASTER INDEPENDEN (Tanpa Foreign Key)
--- =======================================================
-
--- 1. Table: tb_roles (User Management)
-DROP TABLE IF EXISTS `tb_roles`;
-CREATE TABLE `tb_roles` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
-  `description` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 2. Table: employees (Master Karyawan)
-DROP TABLE IF EXISTS `employees`;
-CREATE TABLE `employees` (
-  `employee_id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) DEFAULT NULL,
-  `position` varchar(50) DEFAULT NULL,
-  `status` enum('active','inactive') DEFAULT 'active',
-  `competency` varchar(100) DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 3. Table: heavy_equipment (Master Alat Berat Core)
-DROP TABLE IF EXISTS `heavy_equipment`;
-CREATE TABLE `heavy_equipment` (
-  `equipment_id` int NOT NULL AUTO_INCREMENT,
-  `unit_code` varchar(50) DEFAULT NULL,
-  `equipment_type` enum('Crusher','Shiploader','Shovel','Haul Truck') DEFAULT NULL,
-  `capacity` float DEFAULT NULL,
-  `default_status` enum('ready','standby','maintenance') DEFAULT 'ready',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`equipment_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 4. Table: tb_equipment (Master Alat Berat App Baru)
-DROP TABLE IF EXISTS `tb_equipment`;
-CREATE TABLE `tb_equipment` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `unit_id` varchar(20) NOT NULL,
-  `type` varchar(50) NOT NULL,
-  `location` varchar(100) DEFAULT 'Workshop',
-  `status` enum('Available','Breakdown','Maintenance','Standby') DEFAULT 'Available',
-  `is_available` tinyint(1) DEFAULT '1',
-  `productivity_rate` decimal(6,2) DEFAULT '0.00',
-  `last_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unit_id` (`unit_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 5. Table: weekly_periods (Periode Mingguan)
-DROP TABLE IF EXISTS `weekly_periods`;
-CREATE TABLE `weekly_periods` (
-  `period_id` int NOT NULL AUTO_INCREMENT,
-  `period_code` varchar(50) DEFAULT NULL,
-  `start_date` date DEFAULT NULL,
-  `end_date` date DEFAULT NULL,
-  `target_tonnage` float DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`period_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 6. Table: weekly_plan (Rencana Mingguan - Standalone)
-DROP TABLE IF EXISTS `weekly_plan`;
-CREATE TABLE `weekly_plan` (
-  `plan_id` char(10) NOT NULL,
-  `start_date` date DEFAULT NULL,
-  `end_date` date DEFAULT NULL,
-  `production_target_tons` int DEFAULT NULL,
-  `stockpile_tons` int DEFAULT NULL,
-  `plan_status` varchar(50) DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`plan_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 7. Table: locations (Lokasi Tambang)
-DROP TABLE IF EXISTS `locations`;
-CREATE TABLE `locations` (
-  `location_id` int NOT NULL AUTO_INCREMENT,
-  `location_name` varchar(100) DEFAULT NULL,
-  `location_type` enum('pit','disposal','hauling','workshop','stockpile') DEFAULT NULL,
-  PRIMARY KEY (`location_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 8. Table: shifts (Jadwal Shift)
-DROP TABLE IF EXISTS `shifts`;
-CREATE TABLE `shifts` (
-  `shift_id` int NOT NULL AUTO_INCREMENT,
-  `shift_name` varchar(50) DEFAULT NULL,
-  `start_time` time DEFAULT NULL,
-  `end_time` time DEFAULT NULL,
-  PRIMARY KEY (`shift_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 9. Table: weather (Data Cuaca)
-DROP TABLE IF EXISTS `weather`;
-CREATE TABLE `weather` (
-  `date` date NOT NULL,
-  `rainfall_mm` float DEFAULT '0',
-  `road_condition` enum('Flooded','Very Slippery','Slippery','Wet','Dry') DEFAULT NULL,
-  `max_wave_m` float DEFAULT '0',
-  `port_status` enum('Closed','Restricted','Open') DEFAULT NULL,
-  `effective_working_hours` int DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`date`),
-  UNIQUE KEY `date` (`date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 10. Table: shipping_schedule (Jadwal Kapal)
-DROP TABLE IF EXISTS `shipping_schedule`;
-CREATE TABLE `shipping_schedule` (
-  `vessel_id` char(20) NOT NULL,
-  `vessel_name` varchar(100) DEFAULT NULL,
-  `eta_date` date DEFAULT NULL,
-  `latest_berthing` date DEFAULT NULL,
-  `target_load_tons` int DEFAULT NULL,
-  `shipping_notes` text,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`vessel_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 11. Table: fleet_master (Master Armada)
-DROP TABLE IF EXISTS `fleet_master`;
-CREATE TABLE `fleet_master` (
-  `asset_id` char(20) NOT NULL,
-  `equipment_type` char(50) DEFAULT NULL,
-  `model` char(50) DEFAULT NULL,
-  `capacity` smallint DEFAULT NULL,
-  `capacity_unit` char(20) DEFAULT NULL,
-  `current_status` char(50) DEFAULT NULL,
-  `location` char(50) DEFAULT NULL,
-  `planner_notes` text,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`asset_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 12. Table: tb_blending_plan (Rencana Blending)
-DROP TABLE IF EXISTS `tb_blending_plan`;
-CREATE TABLE `tb_blending_plan` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `plan_week` int NOT NULL,
-  `plan_year` int NOT NULL,
-  `target_tonnage_weekly` int NOT NULL,
-  `target_calori` decimal(6,2) DEFAULT '4800.00',
-  `target_ash_max` decimal(4,2) DEFAULT '12.00',
-  `initial_ash_draft` decimal(4,2) DEFAULT '12.50',
-  `final_ash_result` decimal(4,2) DEFAULT NULL,
-  `is_approved_mine` tinyint(1) DEFAULT '0',
-  `is_approved_shipping` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 13. Table: plan_optimization_log (Log Optimasi)
-DROP TABLE IF EXISTS `plan_optimization_log`;
-CREATE TABLE `plan_optimization_log` (
-  `log_id` int NOT NULL AUTO_INCREMENT,
-  `plan_id` varchar(50) NOT NULL,
-  `version` int DEFAULT '1',
-  `summary_json` json DEFAULT NULL,
-  `scenarios_json` json DEFAULT NULL,
-  `selected_scenario_id` json DEFAULT NULL,
-  `rejection_note` text,
-  `current_step` enum('DRAFTING_MINE','DRAFTING_SHIP','SCENARIO_SELECTION','FINAL_APPROVAL','COMPLETED','REJECTED') DEFAULT 'DRAFTING_MINE',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`log_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- =======================================================
--- BAGIAN 2: TABEL DEPENDENSI (Memiliki Foreign Keys)
--- =======================================================
-
--- 14. Table: tb_users (Depends on tb_roles)
-DROP TABLE IF EXISTS `tb_users`;
-CREATE TABLE `tb_users` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(100) NOT NULL,
-  `email` varchar(150) NOT NULL,
-  `pass` varchar(255) NOT NULL,
-  `role_id` int NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`),
-  UNIQUE KEY `email` (`email`),
-  KEY `role_fk` (`role_id`),
-  CONSTRAINT `fk_role` FOREIGN KEY (`role_id`) REFERENCES `tb_roles` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 15. Table: tb_karyawan (Depends on tb_equipment)
-DROP TABLE IF EXISTS `tb_karyawan`;
-CREATE TABLE `tb_karyawan` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nama` varchar(100) NOT NULL,
-  `user_id` int DEFAULT NULL,
-  `competency` varchar(150) NOT NULL,
-  `current_unit_id` int DEFAULT NULL,
-  `current_shift` varchar(20) DEFAULT 'Day 1',
-  `presence` enum('Hadir','Absen','Sakit','Cuti') DEFAULT 'Hadir',
-  PRIMARY KEY (`id`),
-  KEY `unit_fk` (`current_unit_id`),
-  CONSTRAINT `tb_karyawan_ibfk_1` FOREIGN KEY (`current_unit_id`) REFERENCES `tb_equipment` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 16. Table: weekly_schedule (Multi-dependency: periods, employees, equipment, shifts, locations)
-DROP TABLE IF EXISTS `weekly_schedule`;
-CREATE TABLE `weekly_schedule` (
-  `schedule_id` int NOT NULL AUTO_INCREMENT,
-  `period_id` int DEFAULT NULL,
-  `date` date DEFAULT NULL,
-  `employee_id` int DEFAULT NULL,
-  `equipment_id` int DEFAULT NULL,
-  `shift_id` int DEFAULT NULL,
-  `location_id` int DEFAULT NULL,
-  `notes` text,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`schedule_id`),
-  KEY `period_id` (`period_id`),
-  KEY `employee_id` (`employee_id`),
-  KEY `equipment_id` (`equipment_id`),
-  KEY `shift_id` (`shift_id`),
-  KEY `location_id` (`location_id`),
-  CONSTRAINT `weekly_schedule_ibfk_1` FOREIGN KEY (`period_id`) REFERENCES `weekly_periods` (`period_id`),
-  CONSTRAINT `weekly_schedule_ibfk_2` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`),
-  CONSTRAINT `weekly_schedule_ibfk_3` FOREIGN KEY (`equipment_id`) REFERENCES `heavy_equipment` (`equipment_id`),
-  CONSTRAINT `weekly_schedule_ibfk_4` FOREIGN KEY (`shift_id`) REFERENCES `shifts` (`shift_id`),
-  CONSTRAINT `weekly_schedule_ibfk_5` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=211 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 17. Table: daily_attendance (Depends on employees)
-DROP TABLE IF EXISTS `daily_attendance`;
-CREATE TABLE `daily_attendance` (
-  `attendance_id` int NOT NULL AUTO_INCREMENT,
-  `date` date DEFAULT NULL,
-  `employee_id` int DEFAULT NULL,
-  `attendance_status` enum('present','sick','permission','absent','leave') DEFAULT 'present',
-  `remarks` text,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`attendance_id`),
-  KEY `employee_id` (`employee_id`),
-  CONSTRAINT `daily_attendance_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 18. Table: daily_equipment_status (Depends on heavy_equipment)
-DROP TABLE IF EXISTS `daily_equipment_status`;
-CREATE TABLE `daily_equipment_status` (
-  `status_id` int NOT NULL AUTO_INCREMENT,
-  `date` date DEFAULT NULL,
-  `equipment_id` int DEFAULT NULL,
-  `equipment_status` enum('ready','breakdown','maintenance','standby') DEFAULT 'ready',
-  `remarks` text,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`status_id`),
-  KEY `equipment_id` (`equipment_id`),
-  CONSTRAINT `daily_equipment_status_ibfk_1` FOREIGN KEY (`equipment_id`) REFERENCES `heavy_equipment` (`equipment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 19. Table: daily_reports (Depends on weekly_periods)
-DROP TABLE IF EXISTS `daily_reports`;
-CREATE TABLE `daily_reports` (
-  `report_id` int NOT NULL AUTO_INCREMENT,
-  `period_id` int DEFAULT NULL,
-  `date` date DEFAULT NULL,
-  `daily_tonnage` float DEFAULT NULL,
-  `total_employees_present` int DEFAULT NULL,
-  `total_equipment_ready` int DEFAULT NULL,
-  `notes` text,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`report_id`),
-  KEY `period_id` (`period_id`),
-  CONSTRAINT `daily_reports_ibfk_1` FOREIGN KEY (`period_id`) REFERENCES `weekly_periods` (`period_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- 20. Table: daily_report_details (Depends on daily_reports, heavy_equipment, employees)
-DROP TABLE IF EXISTS `daily_report_details`;
-CREATE TABLE `daily_report_details` (
-  `detail_id` int NOT NULL AUTO_INCREMENT,
-  `report_id` int DEFAULT NULL,
-  `equipment_id` int DEFAULT NULL,
-  `employee_id` int DEFAULT NULL,
-  `tonnage` float DEFAULT NULL,
-  `start_time` time DEFAULT NULL,
-  `end_time` time DEFAULT NULL,
-  PRIMARY KEY (`detail_id`),
-  KEY `report_id` (`report_id`),
-  KEY `equipment_id` (`equipment_id`),
-  KEY `employee_id` (`employee_id`),
-  CONSTRAINT `daily_report_details_ibfk_1` FOREIGN KEY (`report_id`) REFERENCES `daily_reports` (`report_id`),
-  CONSTRAINT `daily_report_details_ibfk_2` FOREIGN KEY (`equipment_id`) REFERENCES `heavy_equipment` (`equipment_id`),
-  CONSTRAINT `daily_report_details_ibfk_3` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
->>>>>>> 9f98f19af362063e3803dee35572af4760ae119f
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
@@ -937,8 +222,4 @@ CREATE TABLE `daily_report_details` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-<<<<<<< HEAD
--- Dump completed on 2025-12-07 17:25:22
-=======
--- Dump completed
->>>>>>> 9f98f19af362063e3803dee35572af4760ae119f
+-- Dump completed on 2025-12-07 22:21:12
