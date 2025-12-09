@@ -28,6 +28,10 @@ export default defineConfig({
           __dirname,
           "src/pages/shipping-planner/ai_agent/ai_agent.html"
         ),
+        shipPlan: resolve(
+          __dirname,
+          "src/pages/shipping-planner/ai_plan/ship_plan.html"
+        ),
         crew: resolve(
           __dirname,
           "src/pages/mine-planner/crew/crew_management_page.html"

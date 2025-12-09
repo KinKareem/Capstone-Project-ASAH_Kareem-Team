@@ -6,6 +6,7 @@ import {
   getWeatherToday,
   getBlendingPlansFiltered,
   getPlanOptimizationLog,
+  getLatestSelectedScenario,
 } from "../models/dashboard_model.js";
 
 export const getKpi = async (req, res) => {
@@ -69,6 +70,15 @@ export const getOptimizationLogs = async (req, res) => {
   try {
     const rows = await getPlanOptimizationLog();
     res.json({ message: "GET optimization logs success", data: rows });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
+export const getSelectedScenario = async (req, res) => {
+  try {
+    const result = await getLatestSelectedScenario();
+    res.json({ message: "GET selected scenario success", data: result });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }

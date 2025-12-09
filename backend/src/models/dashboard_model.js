@@ -255,3 +255,69 @@ export const getPlanOptimizationLog = async () => {
   );
   return rows;
 };
+
+export const getLatestSelectedScenario = async () => {
+  const [rows] = await dbPool.query(
+    "SELECT selected_scenario_id, scenarios_json, rejection_note FROM plan_optimization_log ORDER BY created_at DESC, log_id DESC LIMIT 1"
+  );
+  const row = rows?.[0] || null;
+  if (!row) return { selected: null, scenario: null };
+
+  // Jika log terbaru adalah hasil reject dari Shipping, jangan tampilkan scenario
+  const noteVal = row.rejection_note;
+  if (noteVal !== null && String(noteVal).trim().length > 0) {
+    return { selected: null, scenario: null };
+  }
+
+  let selected = null;
+  let scenario = null;
+
+  // Parse selected_scenario_id which may be a number, stringified number, or JSON object/string
+  try {
+    const raw = row.selected_scenario_id;
+    if (typeof raw === "number") {
+      selected = raw;
+    } else if (typeof raw === "string") {
+      const str = raw.trim();
+      if (str.startsWith("{") || str.startsWith("[")) {
+        const obj = JSON.parse(str);
+        if (obj && typeof obj === "object") {
+          selected = obj.id ?? null;
+          scenario = obj; // full scenario already provided
+        }
+      } else {
+        const n = Number(str);
+        selected = Number.isNaN(n) ? null : n;
+      }
+    } else if (raw && typeof raw === "object") {
+      selected = raw.id ?? null;
+      scenario = raw;
+    }
+  } catch {
+    selected = null;
+  }
+
+  // If we don't have the full scenario object yet, try to locate it inside scenarios_json
+  if (!scenario) {
+    try {
+      const payload =
+        typeof row.scenarios_json === "string"
+          ? JSON.parse(row.scenarios_json)
+          : row.scenarios_json;
+      const list = Array.isArray(payload?.scenarios) ? payload.scenarios : [];
+      if (selected != null) {
+        scenario = list.find((s) => Number(s.id) === Number(selected)) || null;
+      }
+      // If selected was missing but list contains ai_recommended, fallback
+      if (!scenario && list.length) {
+        scenario =
+          list.find((s) => s.ai_recommended === true) || list[0] || null;
+        selected = scenario?.id ?? selected;
+      }
+    } catch {
+      // keep scenario null
+    }
+  }
+
+  return { selected, scenario };
+};

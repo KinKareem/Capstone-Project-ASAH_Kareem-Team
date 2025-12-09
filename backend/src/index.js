@@ -76,7 +76,6 @@ app.use("/ai_recommendation", aiRecommendationRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/shipping-dashboard", shippingDashboardRoutes);
 
-
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || "Terjadi kesalahan pada server.";

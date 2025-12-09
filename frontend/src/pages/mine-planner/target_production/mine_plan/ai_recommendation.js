@@ -1,6 +1,8 @@
 import { BASE_URL } from "../../../../pages/utils/config.js";
 const N8N_TRIGGER =
   "https://pojer26018.app.n8n.cloud/webhook-test/recommendation";
+const N8N_SELECTED =
+  "https://pojer26018.app.n8n.cloud/webhook-test/selectedcard";
 
 // 🔄 SHOW MODAL
 function showModal() {
@@ -35,30 +37,44 @@ async function triggerRecommendation() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ plan_id: "", rejection_note: "" }),
     });
-    const text = await res.text();
-    if (res.ok) {
-      document.getElementById("modal-title").innerText = "Success!";
-      document.getElementById("modal-body").innerHTML = `
-                <p>AI Agent berhasil dipicu.</p>
-                <p>Memuat ulang rekomendasi dari database...</p>
-            `;
-      document.getElementById("modal-ok-btn").classList.remove("d-none");
+
+    const start = Date.now();
+    document.getElementById("modal-title").innerText = "Processing...";
+    document.getElementById("modal-body").innerHTML = `
+      <div class="spinner-border text-primary"></div>
+      <p class="mt-3">Menunggu rekomendasi AI...</p>
+    `;
+    while (true) {
       try {
-        await loadRecommendation();
-      } catch {}
-    } else {
-      document.getElementById("modal-title").innerText = "Error!";
-      document.getElementById("modal-body").innerHTML = `
-                <p class="text-danger">Gagal memicu AI Agent!</p>
-                <p>Status: ${res.status}</p>
-                <pre class="mt-2">${text || ""}</pre>
+        const r = await fetch(API_RECOMMENDATION, { cache: "no-store" });
+        if (r.ok) {
+          const j = await r.json();
+          const arr = Array.isArray(j.scenarios) ? j.scenarios : [];
+          if (arr.length) {
+            document.getElementById("modal-title").innerText = "Success!";
+            document.getElementById("modal-body").innerHTML = `
+              <p>Rekomendasi AI tersedia.</p>
             `;
-      document.getElementById("modal-ok-btn").classList.remove("d-none");
+            document.getElementById("modal-ok-btn").classList.remove("d-none");
+            break;
+          }
+        }
+      } catch {}
+      await sleep(2000);
+      if (Date.now() - start > 300000) {
+        document.getElementById("modal-title").innerText = "Timeout";
+        document.getElementById("modal-body").innerHTML = `
+          <p class="text-warning">Belum ada rekomendasi setelah menunggu lama. Coba cek kembali nanti.</p>
+        `;
+        document.getElementById("modal-ok-btn").classList.remove("d-none");
+        break;
+      }
     }
   } catch (err) {
     document.getElementById("modal-title").innerText = "Error!";
     document.getElementById("modal-body").innerHTML = `
             <p class="text-danger">Gagal memicu AI Agent!</p>
+            <p>Periksa koneksi atau server N8N.</p>
         `;
     document.getElementById("modal-ok-btn").classList.remove("d-none");
   }
@@ -68,6 +84,9 @@ async function triggerRecommendation() {
 // LOAD RECOMMENDATIONS
 // =======================
 const API_RECOMMENDATION = `${BASE_URL}/ai_recommendation/ai_recommendation`;
+const API_OPT_LOGS = `${BASE_URL}/shipping-dashboard/optimization-logs`;
+const API_SELECTED = `${BASE_URL}/shipping-dashboard/selected-scenario`;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function loadRecommendation() {
   const container = document.getElementById("recommendation-container");
@@ -173,6 +192,102 @@ async function loadRecommendation() {
 }
 loadRecommendation();
 
+async function loadRejectionStatus() {
+  const tbody = document.querySelector("#rejectionStatusTable tbody");
+  if (!tbody) return;
+  try {
+    const res = await fetch(API_OPT_LOGS);
+    const json = await res.json();
+    const rows = Array.isArray(json.data) ? json.data : [];
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="4" class="text-muted">Tidak ada status.</td></tr>`;
+      document.getElementById("rejection-banner").innerHTML = "";
+      return;
+    }
+    const mapId = (raw) => {
+      try {
+        if (typeof raw === "number") return raw;
+        if (typeof raw === "string") {
+          const s = raw.trim();
+          if (s.startsWith("{") || s.startsWith("[")) {
+            const o = JSON.parse(s);
+            if (o && typeof o === "object") return o.id ?? null;
+            return null;
+          }
+          const n = Number(s);
+          return Number.isNaN(n) ? null : n;
+        }
+        if (raw && typeof raw === "object") return raw.id ?? null;
+      } catch {}
+      return null;
+    };
+    const getScenarioName = (row) => {
+      try {
+        const payload =
+          typeof row.scenarios_json === "string"
+            ? JSON.parse(row.scenarios_json)
+            : row.scenarios_json;
+        const list = Array.isArray(payload?.scenarios) ? payload.scenarios : [];
+        const id = mapId(row.selected_scenario_id);
+        const found = list.find((s) => Number(s.id) === Number(id));
+        return found?.name ?? id ?? "-";
+      } catch {
+        const id = mapId(row.selected_scenario_id);
+        return id ?? "-";
+      }
+    };
+    const fmtStep = (row) => {
+      const note = String(row.rejection_note ?? "").trim();
+      const current = String(row.current_step ?? "").trim();
+      if (current === "COMPLETED") return "APPROVED";
+      if (note) return "REJECTED";
+      if (current) return current;
+      const id = mapId(row.selected_scenario_id);
+      if (id != null) return row.status ?? "SELECTED";
+      return row.status ?? "DRAFT";
+    };
+    const toRow = (r) => {
+      const waktu = r.created_at ?? "-";
+      const step = fmtStep(r);
+      const scenario = getScenarioName(r);
+      const alasan = (r.rejection_note ?? "").toString();
+      return `<tr><td>${waktu}</td><td>${step}</td><td>${scenario}</td><td>${
+        alasan || ""
+      }</td></tr>`;
+    };
+    tbody.innerHTML =
+      rows.map(toRow).join("") ||
+      `<tr><td colspan="4" class="text-muted">Tidak ada status.</td></tr>`;
+    const latest = rows[rows.length - 1];
+    const bannerEl = document.getElementById("rejection-banner");
+    if (bannerEl) {
+      const note = String(latest?.rejection_note ?? "").trim();
+      if (note) {
+        bannerEl.innerHTML = `<div class="alert alert-danger">Scenario terakhir ditolak. Alasan: ${note}</div>`;
+      } else {
+        const id = mapId(latest?.selected_scenario_id);
+        const status = latest?.status ?? "";
+        if (id != null && status === "FINAL_APPROVAL") {
+          bannerEl.innerHTML = `<div class="alert alert-success">Scenario ${id} disetujui.</div>`;
+        } else if (id != null) {
+          bannerEl.innerHTML = `<div class="alert alert-info">Scenario ${id} telah dipilih.</div>`;
+        } else {
+          bannerEl.innerHTML = "";
+        }
+      }
+    }
+  } catch {
+    const tbody2 = document.querySelector("#rejectionStatusTable tbody");
+    if (tbody2)
+      tbody2.innerHTML = `<tr><td colspan="4" class="text-danger">Gagal memuat status.</td></tr>`;
+  }
+}
+loadRejectionStatus();
+
+// Expose functions for inline HTML handlers
+window.triggerRecommendation = triggerRecommendation;
+window.refreshPage = refreshPage;
+
 // =======================
 // Scenario selection
 // =======================
@@ -223,7 +338,7 @@ async function submitSelectedScenario() {
   document.getElementById("modal-ok-btn").classList.add("d-none");
 
   try {
-    const res = await fetch(N8N_TRIGGER, {
+    const res = await fetch(N8N_SELECTED, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -231,25 +346,39 @@ async function submitSelectedScenario() {
         selected_scenario_id: selectedScenarioId,
       }),
     });
-    const text = await res.text();
-    if (res.ok) {
-      document.getElementById("modal-title").innerText = "Success!";
-      document.getElementById("modal-body").innerHTML = `
-                <p>Scenario <strong>${selectedScenarioId}</strong> berhasil dikirim ke AI Agent.</p>
-                <p>Memuat ulang rekomendasi dari database...</p>
-            `;
-      document.getElementById("modal-ok-btn").classList.remove("d-none");
+
+    const start = Date.now();
+    document.getElementById("modal-title").innerText = "Processing...";
+    document.getElementById("modal-body").innerHTML = `
+      <div class="spinner-border text-primary"></div>
+      <p class="mt-3">Menunggu penyimpanan scenario terpilih...</p>
+    `;
+    while (true) {
       try {
-        await loadRecommendation();
-      } catch {}
-    } else {
-      document.getElementById("modal-title").innerText = "Error!";
-      document.getElementById("modal-body").innerHTML = `
-                <p class="text-danger">Gagal mengirim scenario ke AI Agent.</p>
-                <p>Status: ${res.status}</p>
-                <pre class="mt-2">${text || ""}</pre>
+        const r = await fetch(API_SELECTED, { cache: "no-store" });
+        if (r.ok) {
+          const j = await r.json();
+          const d = j.data || {};
+          const scn = d.scenario || null;
+          if (scn && Number(scn.id) === Number(selectedScenarioId)) {
+            document.getElementById("modal-title").innerText = "Success!";
+            document.getElementById("modal-body").innerHTML = `
+              <p>Scenario <strong>${selectedScenarioId}</strong> tersimpan.</p>
             `;
-      document.getElementById("modal-ok-btn").classList.remove("d-none");
+            document.getElementById("modal-ok-btn").classList.remove("d-none");
+            break;
+          }
+        }
+      } catch {}
+      await sleep(2000);
+      if (Date.now() - start > 300000) {
+        document.getElementById("modal-title").innerText = "Timeout";
+        document.getElementById("modal-body").innerHTML = `
+          <p class="text-warning">Belum terdeteksi penyimpanan scenario. Coba cek kembali nanti.</p>
+        `;
+        document.getElementById("modal-ok-btn").classList.remove("d-none");
+        break;
+      }
     }
   } catch (err) {
     document.getElementById("modal-title").innerText = "Error!";
@@ -290,41 +419,48 @@ async function submitRejection() {
     const res = await fetch(N8N_TRIGGER, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan_id: "", rejection_note: note }),
+      body: JSON.stringify({
+        plan_id: "",
+        rejection_note: note,
+      }),
     });
-    const text = await res.text();
-    let isSuccess = res.ok;
-    if (text && text.length) {
+
+    const start = Date.now();
+    document.getElementById("modal-title").innerText = "Processing...";
+    document.getElementById("modal-body").innerHTML = `
+      <div class="spinner-border text-danger"></div>
+      <p class="mt-3">Menunggu penolakan tercatat...</p>
+    `;
+    while (true) {
       try {
-        const json = JSON.parse(text);
-        if (Array.isArray(json)) {
-          isSuccess = json[0]?.success === true || res.ok;
-        } else if (typeof json === "object" && json !== null) {
-          isSuccess = json.success === true || res.ok;
+        const r = await fetch(API_SELECTED, { cache: "no-store" });
+        if (r.ok) {
+          const j = await r.json();
+          const d = j.data || {};
+          const scn = d.scenario || null;
+          if (!scn) {
+            document.getElementById("modal-title").innerText = "Rejected!";
+            document.getElementById("modal-body").innerHTML = `
+              <p>Penolakan tercatat. Scenario dihapus.</p>
+            `;
+            document.getElementById("modal-ok-btn").classList.remove("d-none");
+            break;
+          }
         }
       } catch {}
-    }
-    if (isSuccess) {
-      document.getElementById("modal-title").innerText = "Rejected!";
-      document.getElementById("modal-body").innerHTML = `
-                <p>Rejection note berhasil dikirim ke AI Agent.</p>
-                <p>Anda dapat melanjutkan.</p>
-                <p>Memuat ulang rekomendasi dari database...</p>
-            `;
-      document.getElementById("modal-ok-btn").classList.remove("d-none");
-      try {
-        await loadRecommendation();
-      } catch {}
-    } else {
-      document.getElementById("modal-title").innerText = "Error!";
-      document.getElementById("modal-body").innerHTML = `
-                <p class="text-danger">Gagal mengirim rejection note!</p>
-                <p>Status: ${res.status}</p>
-                <pre class="mt-2">${text || ""}</pre>
-            `;
-      document.getElementById("modal-ok-btn").classList.remove("d-none");
+      await sleep(2000);
+      if (Date.now() - start > 300000) {
+        document.getElementById("modal-title").innerText = "Timeout";
+        document.getElementById("modal-body").innerHTML = `
+          <p class="text-warning">Penolakan belum terdeteksi. Coba cek kembali nanti.</p>
+        `;
+        document.getElementById("modal-ok-btn").classList.remove("d-none");
+        break;
+      }
     }
   } catch (err) {
+    console.error(err);
+
     document.getElementById("modal-title").innerText = "Error!";
     document.getElementById("modal-body").innerHTML = `
             <p class="text-danger">Gagal mengirim rejection note!</p>
@@ -332,9 +468,6 @@ async function submitRejection() {
     document.getElementById("modal-ok-btn").classList.remove("d-none");
   }
 }
-
-window.triggerRecommendation = triggerRecommendation;
-window.refreshPage = refreshPage;
 
 document
   .getElementById("submit-rejection-btn")

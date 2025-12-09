@@ -295,9 +295,21 @@ body {
   gap: 12px;
   margin-top: 10px;
   flex-wrap: wrap;
-}
 .legend-item {
   display: flex;
+}
+
+/* Scenario card styles */
+.scenario-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+}
+.scenario-card .badge {
+  border-radius: 6px;
+}
+.scenario-card ul {
+  margin-left: 18px;
+}
   align-items: center;
   gap: 8px;
   color: #374151;
